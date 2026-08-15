@@ -1,6 +1,6 @@
-# Passthrough Toy Generator
+# Passthrough Fidget Generator
 
-A Python generator for creating interlocking passthrough toys from existing 3D models.
+A Python generator for creating interlocking passthrough fidgets from existing 3D models.
 
 The generator takes a watertight STL/OBJ/PLY model and creates two separate meshes:
 
@@ -260,21 +260,3 @@ If they are excessively loose:
 ```text
 0.2–0.25 mm
 ```
-
-## Current Limitations
-
-The current generator uses a cylindrical/radial mathematical interface. It therefore works best with models that have a reasonably continuous body around their central axis.
-
-It does not yet automatically adapt the curved interface to every arbitrary model shape.
-
-Future improvements could include:
-
-* Automatically fitting the curved surface to the input model
-* Supporting different axes
-* Better handling of irregular models
-* Automatic wall-thickness checks
-* Collision/intersection validation
-* Automatic printer-clearance compensation
-* Preview rendering
-* GUI
-* Direct slicer integration
