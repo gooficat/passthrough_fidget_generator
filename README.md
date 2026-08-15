@@ -43,7 +43,7 @@ output/
 ### Example
 
 ```bash
-python main.py "xyz-10mm-calibration-cube (1).stl" \
+python main.py "my_cube.stl" \
     --clearance 0.3 \
     --waves 1.5 \
     --twists 2 \
