@@ -296,7 +296,7 @@ def generate(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate a smooth curved passthrough toy."
+        description="Generate a smooth curved passthrough fidget."
     )
 
     parser.add_argument(
