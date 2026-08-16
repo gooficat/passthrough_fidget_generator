@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "passthrough-fidget-generator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate interlocking passthrough fidgets from existing 3D models."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 
 authors = [
     { name = "Hasan Sabri" }

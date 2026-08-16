@@ -23,12 +23,22 @@ Install the dependencies with:
 pip install numpy trimesh manifold3d
 ```
 
+```bash
+pip install passthrough-fidget-generator
+```
+
 ## Usage
 
 Basic example:
 
 ```bash
-python main.py model.stl
+passthrough-fidget-generator model.stl
+```
+
+Or run it as a module without installing:
+
+```bash
+python -m passthrough_fidget_generator model.stl
 ```
 
 This creates:
