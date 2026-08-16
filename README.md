@@ -1,59 +1,96 @@
 # Passthrough Fidget Generator
 
-A Python generator for creating interlocking passthrough fidgets from existing 3D models.
+Generate interlocking passthrough fidgets from existing 3D models.
 
-The generator takes a watertight STL/OBJ/PLY model and creates two separate meshes:
+The generator takes an existing STL, OBJ, or PLY model and splits it into two interlocking pieces using a smooth curved interface. The resulting pieces can be printed separately and assembled into a passthrough fidget.
 
-* `inner.stl` — the inner/interlocking piece
-* `outer.stl` — the surrounding piece
-* `combined.stl` — both pieces together for inspection
+## Features
 
-The interlocking boundary is generated from a mathematical curved surface rather than voxelizing the model.
+- Generate passthrough fidgets from existing 3D models
+- Smooth mathematical curved interfaces
+- Configurable clearance
+- Configurable waves
+- Configurable twists
+- Configurable radial resolution
+- Configurable height resolution
+- STL output
+- Command-line interface
+- Python API
 
-## Requirements
+## Installation
 
-* Python 3.10+
-* NumPy
-* Trimesh
-* Manifold3D
-
-Install the dependencies with:
-
-```bash
-pip install numpy trimesh manifold3d
-```
+Install from PyPI:
 
 ```bash
 pip install passthrough-fidget-generator
 ```
 
-## Usage
+## Command Line
 
-Basic example:
+Basic usage:
 
 ```bash
 passthrough-fidget-generator model.stl
 ```
 
-Or run it as a module without installing:
+Specify an output directory:
 
 ```bash
-python -m passthrough_fidget_generator model.stl
+passthrough-fidget-generator model.stl -o output
 ```
 
-This creates:
+### Parameters
 
-```text
-output/
-├── inner.stl
-├── outer.stl
-└── combined.stl
+#### `--clearance`
+
+Sets the gap between the two pieces.
+
+```bash
+--clearance 0.3
 ```
+
+The value uses the same units as the input model.
+
+#### `--waves`
+
+Controls the number of waves along the height of the model.
+
+```bash
+--waves 1.5
+```
+
+#### `--twists`
+
+Controls how many rotations the interface makes around the model.
+
+```bash
+--twists 2
+```
+
+#### `--radial-samples`
+
+Controls the resolution around the curved interface.
+
+```bash
+--radial-samples 128
+```
+
+Higher values produce smoother surfaces but require more processing.
+
+#### `--height-samples`
+
+Controls the resolution along the height of the interface.
+
+```bash
+--height-samples 64
+```
+
+Higher values produce smoother surfaces but require more processing.
 
 ### Example
 
 ```bash
-python main.py "my_cube.stl" \
+passthrough-fidget-generator model.stl \
     --clearance 0.3 \
     --waves 1.5 \
     --twists 2 \
@@ -62,211 +99,115 @@ python main.py "my_cube.stl" \
     -o output
 ```
 
-## Options
+## Python API
 
-### `--clearance`
+The generator can be used directly from Python:
 
-Controls the gap between the two pieces.
+```python
+from passthrough_fidget_generator import generate_from_file
 
-```bash
---clearance 0.3
+paths = generate_from_file(
+    "model.stl",
+    output="output",
+    clearance=0.3,
+    waves=1.5,
+    twists=2,
+    radial_samples=128,
+    height_samples=64,
+)
 ```
 
-The value uses the same units as the input model. For an STL in millimetres, this is 0.3 mm.
+You can also work directly with a `trimesh.Trimesh` object:
 
-Typical starting values:
+```python
+from passthrough_fidget_generator import generate
 
-```text
-0.2 mm  Tight
-0.3 mm  Normal
-0.4 mm  Loose
-0.5 mm  Very loose
+inner, outer = generate(
+    mesh,
+    clearance=0.3,
+    waves=1.5,
+    twists=2,
+    radial_samples=128,
+    height_samples=64,
+)
 ```
-
-The correct value depends on the printer and material.
-
-### `--waves`
-
-Controls the number of waves along the height of the model.
-
-```bash
---waves 1.5
-```
-
-Higher values produce more interlocking sections.
-
-### `--twists`
-
-Controls how much the wave rotates around the object.
-
-```bash
---twists 2
-```
-
-Higher values create more twisting between the inner and outer pieces.
-
-### `--amplitude`
-
-Controls how far the curved interface moves from its base radius.
-
-```bash
---amplitude 1.0
-```
-
-If omitted or set to `0`, the generator chooses an amplitude automatically.
-
-### `--radius`
-
-Controls the base radius of the curved interface.
-
-```bash
---radius 2.5
-```
-
-If set to `0`, the radius is calculated automatically from the input model.
-
-### `--radial-samples`
-
-Controls the number of points around the curved surface.
-
-```bash
---radial-samples 256
-```
-
-Higher values produce a smoother circular direction but increase processing time and STL size.
-
-### `--height-samples`
-
-Controls the number of points along the height of the curved surface.
-
-```bash
---height-samples 128
-```
-
-Higher values produce a smoother vertical curve.
-
-## Recommended Resolution
-
-For testing:
-
-```bash
---radial-samples 128 --height-samples 64
-```
-
-For a smoother final model:
-
-```bash
---radial-samples 256 --height-samples 128
-```
-
-For very smooth surfaces:
-
-```bash
---radial-samples 512 --height-samples 256
-```
-
-Higher resolutions create significantly more triangles.
-
-## How It Works
-
-The interlocking surface is based on a mathematical function:
-
-```text
-r(θ,z) = R + A sin(kz + nθ)
-```
-
-where:
-
-* `R` is the base radius
-* `A` is the wave amplitude
-* `k` controls the vertical waves
-* `n` controls the angular twisting
-
-The surface is sampled directly and converted into a triangle mesh.
-
-This is different from voxel-based generation.
-
-### Voxel approach
-
-```text
-Model
-  ↓
-Voxel grid
-  ↓
-Marching cubes
-  ↓
-STL
-```
-
-This can produce stepped or blocky surfaces depending on voxel resolution.
-
-### This approach
-
-```text
-Mathematical surface
-  ↓
-Direct surface sampling
-  ↓
-Triangle mesh
-  ↓
-STL
-```
-
-The underlying interface is therefore a continuous mathematical curve, with the STL triangles only approximating that curve.
 
 ## Input Models
 
-The input should preferably be:
+The input should be a closed, watertight solid.
 
-* Watertight
-* A single solid
-* A reasonably clean mesh
-* Suitable for boolean operations
+Supported formats depend on the underlying `trimesh` installation, including:
 
-For example:
+- STL
+- OBJ
+- PLY
 
-```text
-model.stl
+Non-watertight or invalid meshes may fail during the boolean operations used to create the pieces.
+
+## How It Works
+
+The generator:
+
+1. Loads the input mesh.
+2. Creates a smooth mathematical interface through the model.
+3. Uses boolean operations to divide the original model along that interface.
+4. Applies the requested clearance.
+5. Extracts the resulting inner and outer pieces.
+6. Writes the generated meshes as STL files.
+
+The interface is generated mathematically rather than using voxelization, allowing the resulting pieces to have smooth curved surfaces.
+
+## Dependencies
+
+The project uses:
+
+- NumPy
+- SciPy
+- Trimesh
+- Manifold3D
+- scikit-image
+- NetworkX
+
+These dependencies are installed automatically when installing from PyPI.
+
+## Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/gooficat/passthrough_fidget_generator.git
+cd passthrough_fidget_generator
 ```
 
-or:
+Create a virtual environment:
 
-```text
-model.obj
+```bash
+python -m venv .venv
+source .venv/bin/activate
 ```
 
-A model containing holes, self-intersections, or disconnected geometry may produce incorrect results.
+Install the package in editable mode:
 
-## Output
-
-`inner.stl` contains the inner piece.
-
-`outer.stl` contains the outer piece.
-
-`combined.stl` contains both meshes in their generated positions and is useful for checking the result in a slicer or mesh viewer.
-
-The two individual STLs should normally be exported separately for printing.
-
-## Printing
-
-The generated parts are intended to be printed as separate pieces.
-
-The most important setting is clearance. A printer with poorer dimensional accuracy may require a larger clearance.
-
-A reasonable first test is:
-
-```text
-Clearance: 0.3 mm
+```bash
+pip install -e .
 ```
 
-If the pieces are too tight:
+Run the tests:
 
-```text
-0.4–0.5 mm
+```bash
+pytest
 ```
 
-If they are excessively loose:
+## Building
+
+Build the package with:
+
+```bash
+python -m build
+```
+
+The distribution files will be created in:
 
 ```text
-0.2–0.25 mm
+dist/
 ```
