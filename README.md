@@ -11,6 +11,7 @@ The generator takes an existing STL, OBJ, or PLY model and splits it into two in
 - Configurable clearance
 - Configurable waves
 - Configurable twists
+- Configurable radius scale
 - Configurable radial resolution
 - Configurable height resolution
 - STL output
@@ -67,6 +68,26 @@ Controls how many rotations the interface makes around the model.
 --twists 2
 ```
 
+#### `--radius`
+
+Sets the base radius of the spiral cutout.
+
+```bash
+--radius 2.0
+```
+
+The value uses the same units as the input model. If set to `0` (default), the radius is calculated automatically.
+
+#### `--radius-scale`
+
+Controls the fraction of the model's smaller XY extent used for the spiral cutout radius when `--radius` is `0`.
+
+```bash
+--radius-scale 0.4
+```
+
+Larger values produce a wider cutout. The default is `0.35`.
+
 #### `--radial-samples`
 
 Controls the resolution around the curved interface.
@@ -94,6 +115,7 @@ passthrough-fidget-generator model.stl \
     --clearance 0.3 \
     --waves 1.5 \
     --twists 2 \
+    --radius-scale 0.4 \
     --radial-samples 128 \
     --height-samples 64 \
     -o output
@@ -127,6 +149,9 @@ inner, outer = generate(
     clearance=0.3,
     waves=1.5,
     twists=2,
+    amplitude=0.0,
+    radius=0.0,
+    radius_scale=0.35,
     radial_samples=128,
     height_samples=64,
 )

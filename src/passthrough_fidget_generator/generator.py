@@ -228,6 +228,7 @@ def generate(
     radial_samples=256,
     height_samples=128,
     radius=0.0,
+    radius_scale=0.35,
 ):
     center = mesh.bounding_box.centroid
     extents = mesh.bounding_box.extents
@@ -237,7 +238,7 @@ def generate(
     if radius <= 0:
         radius = (
             min(extents[0], extents[1])
-            * 0.25
+            * radius_scale
         )
 
     if amplitude <= 0:

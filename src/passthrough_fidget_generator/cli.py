@@ -56,6 +56,13 @@ def main():
     )
 
     parser.add_argument(
+        "--radius-scale",
+        type=float,
+        default=0.35,
+        help="Fraction of the model's smaller XY extent used for the spiral cutout radius (default: 0.35)"
+    )
+
+    parser.add_argument(
         "--radial-samples",
         type=int,
         default=256,
@@ -92,6 +99,7 @@ def main():
         radius=args.radius,
         radial_samples=args.radial_samples,
         height_samples=args.height_samples,
+        radius_scale=args.radius_scale,
     )
 
     print()
